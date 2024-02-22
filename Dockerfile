@@ -6,6 +6,7 @@ RUN pip install changepoynt --no-deps
 RUN pip install numpy scipy matplotlib pandas dash plotly h5py fbpca
 
 # download the necessary data we need for the prototype
+RUN apt install wget
 RUN wget https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/328266/HS2.zip
 
 # install and run utility tool to unzip files
