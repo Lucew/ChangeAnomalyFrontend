@@ -3,7 +3,7 @@ LABEL authors="lucas"
 
 # install necessary python libraries while
 RUN pip install changepoynt --no-deps
-RUN pip install numpy scipy matplotlib pandas dash plotly h5py fbpca
+RUN pip install numpy scipy matplotlib pandas dash plotly h5py fbpca numba
 
 # download the necessary data we need for the prototype
 RUN apt-get update
