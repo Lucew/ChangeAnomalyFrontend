@@ -594,4 +594,4 @@ def restrict_time(flow_t, flow, flow_change, pressure_t, pressure, pressure_chan
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0', port=8080)
