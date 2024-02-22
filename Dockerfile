@@ -17,4 +17,4 @@ RUN unzip HS2.zip
 # copy the app file into the container
 COPY . ./
 
-ENTRYPOINT ["python", "CPSELECT_Dash.py"]
+CMD python CPSELECT_Dash.py
