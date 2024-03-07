@@ -108,6 +108,10 @@ def make_signals():
         go.Scatter(x=pressure_time, y=pressure_signal, name="Pressure Signal", line=dict(color="green")),
         secondary_y=True,
     )
+
+    fig.update_layout(xaxis=dict(rangeslider=dict(
+        visible=True
+    )))
     return fig
 
 
@@ -124,6 +128,10 @@ def update_marks(figure, v_line: float = None, selected_points: list[dict] = Non
         figure['layout']['shapes'] = [shape for shape in figure['layout']['shapes'] if 'name' not in shape or shape['name'] != 'Sel. Time']
 
     # create the figure object from the serialized json dict
+    # also fix rangeslider bug acccording to: https://github.com/plotly/plotly.js/issues/6310
+    if 'rangeslider' in figure['layout']['xaxis']:
+        del figure['layout']['xaxis']['rangeslider']['yaxis']
+        del figure['layout']['xaxis']['rangeslider']['yaxis2']
     figure = go.Figure(figure)
 
     # get the raw data from the figure
@@ -295,6 +303,7 @@ def compute_and_plot(value, window, step, relayoutData):
 
     # time the computations
     start = time.perf_counter()
+    print(relayoutData)
 
     # compute the change score using a cached function
     flow_t, flow, flow_change, pressure_t, pressure, pressure_change = compute_change_score(window, step)
@@ -572,10 +581,15 @@ def compute_change_score(window_size: int, step_size: int) \
 def restrict_time(flow_t, flow, flow_change, pressure_t, pressure, pressure_change, relayoutData):
 
     # check whether we have and updated x-axis-range
-    if relayoutData is not None and 'xaxis.range[0]' in relayoutData and 'xaxis.range[1]' in relayoutData:
+    if relayoutData is not None and ('xaxis.range[0]' in relayoutData and 'xaxis.range[1]' in relayoutData
+                                     or "xaxis.range" in relayoutData):
         # get the time restrictions
-        x_min = relayoutData['xaxis.range[0]']
-        x_max = relayoutData['xaxis.range[1]']
+        if 'xaxis.range[0]' in relayoutData:
+            x_min = relayoutData['xaxis.range[0]']
+            x_max = relayoutData['xaxis.range[1]']
+        else:
+            x_min = relayoutData['xaxis.range'][0]
+            x_max = relayoutData['xaxis.range'][1]
 
         # find the indices
         idx = np.where(np.logical_and(flow_t > x_min, flow_t < x_max))[0]
